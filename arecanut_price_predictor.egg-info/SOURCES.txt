@@ -1,9 +1,0 @@
-README.md
-app.py
-pyproject.toml
-arecanut_price_predictor.egg-info/PKG-INFO
-arecanut_price_predictor.egg-info/SOURCES.txt
-arecanut_price_predictor.egg-info/dependency_links.txt
-arecanut_price_predictor.egg-info/entry_points.txt
-arecanut_price_predictor.egg-info/requires.txt
-arecanut_price_predictor.egg-info/top_level.txt
