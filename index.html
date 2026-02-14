@@ -3,311 +3,359 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ArecaNut Price Predictor · AI-Powered Forecasting</title>
+    <title>Arecanut Price Forecasting System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
         
+        * {
+            font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
         body {
-            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa;
+            color: #1a1a1a;
         }
 
-        /* Animated gradient background */
-        .gradient-bg {
-            background: linear-gradient(-45deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%);
-            background-size: 400% 400%;
-            animation: gradientShift 15s ease infinite;
-        }
-        
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        .mono {
+            font-family: 'IBM Plex Mono', monospace;
         }
 
-        /* Glass morphism cards */
-        .glass-card {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+        /* Professional card styling */
+        .card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            transition: box-shadow 0.2s ease;
         }
 
-        .glass-card-dark {
-            background: rgba(30, 30, 50, 0.7);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+        .card:hover {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
         }
 
-        /* Colorful gradient buttons */
-        .btn-gradient-purple {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            transition: all 0.3s ease;
-        }
-        .btn-gradient-purple:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-gradient-blue {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            transition: all 0.3s ease;
-        }
-        .btn-gradient-blue:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(79, 172, 254, 0.4);
+        /* Professional buttons */
+        .btn {
+            font-weight: 500;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 0.95rem;
         }
 
-        .btn-gradient-pink {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            transition: all 0.3s ease;
-        }
-        .btn-gradient-pink:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(240, 147, 251, 0.4);
-        }
-
-        .btn-gradient-orange {
-            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-            transition: all 0.3s ease;
-        }
-        .btn-gradient-orange:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(250, 112, 154, 0.4);
-        }
-
-        /* Animated loading spinner */
-        .loading-spinner {
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-top: 3px solid #ffffff;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 0.8s linear infinite;
-            margin: 20px auto;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Smooth fade-in animations */
-        .fade-in {
-            animation: fadeIn 0.6s ease-out;
-        }
-        
-        @keyframes fadeIn {
-            from { 
-                opacity: 0; 
-                transform: translateY(20px);
-            }
-            to { 
-                opacity: 1; 
-                transform: translateY(0);
-            }
-        }
-
-        /* Hover effects */
-        .card-hover {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .card-hover:hover {
-            transform: translateY(-5px) scale(1.02);
-            box-shadow: 0 20px 40px rgba(31, 38, 135, 0.25);
-        }
-
-        /* Colorful badges */
-        .badge-gradient {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .btn-primary {
+            background-color: #2563eb;
             color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 9999px;
-            font-size: 0.75rem;
-            font-weight: 600;
         }
 
-        /* Price display with glow */
-        .price-glow {
-            text-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+        .btn-primary:hover:not(:disabled) {
+            background-color: #1d4ed8;
         }
 
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
+        .btn-secondary {
+            background-color: #64748b;
+            color: white;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background-color: #475569;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Status indicators */
+        .status-indicator {
+            display: inline-block;
             width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.1);
-        }
-        ::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 10px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
         }
 
-        /* Pulse animation for status */
-        .pulse-dot {
-            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+        .status-online {
+            background-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
         }
 
-        /* Chart container styling */
+        .status-offline {
+            background-color: #ef4444;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+        }
+
+        .status-warning {
+            background-color: #f59e0b;
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+        }
+
+        /* Alert messages */
+        .alert {
+            padding: 1rem 1.25rem;
+            border-radius: 6px;
+            border-left: 4px solid;
+            margin-bottom: 1.5rem;
+        }
+
+        .alert-success {
+            background-color: #f0fdf4;
+            border-color: #10b981;
+            color: #065f46;
+        }
+
+        .alert-error {
+            background-color: #fef2f2;
+            border-color: #ef4444;
+            color: #991b1b;
+        }
+
+        .alert-info {
+            background-color: #eff6ff;
+            border-color: #2563eb;
+            color: #1e3a8a;
+        }
+
+        .alert-warning {
+            background-color: #fffbeb;
+            border-color: #f59e0b;
+            color: #92400e;
+        }
+
+        /* Loading spinner */
+        .spinner {
+            border: 2px solid #e5e7eb;
+            border-top-color: #2563eb;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            animation: spin 0.6s linear infinite;
+            display: inline-block;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Chart container */
         .chart-container {
             position: relative;
-            background: rgba(255, 255, 255, 0.5);
-            backdrop-filter: blur(10px);
-            border-radius: 1.5rem;
+            background: white;
+            border-radius: 8px;
             padding: 1.5rem;
+        }
+
+        /* Data display */
+        .data-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #6b7280;
+            margin-bottom: 0.25rem;
+        }
+
+        .data-value {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        /* Table styling */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th {
+            background-color: #f9fafb;
+            border-bottom: 2px solid #e5e7eb;
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .data-table td {
+            border-bottom: 1px solid #e5e7eb;
+            padding: 0.75rem 1rem;
+            font-size: 0.875rem;
+            color: #1a1a1a;
+        }
+
+        .data-table tr:hover {
+            background-color: #f9fafb;
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .badge-blue {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge-gray {
+            background-color: #f3f4f6;
+            color: #374151;
+        }
+
+        /* Metric card */
+        .metric-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .hidden {
+            display: none;
         }
     </style>
 </head>
-<body class="gradient-bg min-h-screen flex items-center justify-center p-4 md:p-8">
-    <div class="w-full max-w-7xl mx-auto">
+<body class="min-h-screen p-4 md:p-8">
+    <div class="max-w-7xl mx-auto">
 
-        <!-- Premium Header with animated icons -->
-        <div class="mb-10 text-center fade-in">
-            <div class="inline-block mb-4">
-                <div class="text-6xl mb-2 animate-bounce">🌴</div>
-            </div>
-            <h1 class="text-4xl md:text-6xl font-bold text-white mb-3 tracking-tight">
-                ArecaNut AI Predictor
-            </h1>
-            <p class="text-white/90 text-lg md:text-xl font-medium mb-2">
-                Smart Forecasting · Machine Learning Powered
-            </p>
-            <div class="flex items-center justify-center gap-3 flex-wrap">
-                <span class="badge-gradient">🤖 RNN Model</span>
-                <span class="badge-gradient">🧠 LSTM Model</span>
-                <span class="badge-gradient">📊 Real-time Data</span>
-            </div>
-            <div id="currentDate" class="text-white/70 text-sm mt-4 font-mono"></div>
-        </div>
-
-        <!-- Colorful Status Bar -->
-        <div id="statusBar" class="glass-card border-l-4 border-purple-500 p-4 mb-8 rounded-2xl hidden fade-in shadow-xl" role="alert">
-            <div class="flex items-center gap-3">
-                <div class="pulse-dot w-3 h-3 rounded-full bg-purple-500"></div>
-                <span class="font-semibold text-gray-800">Status:</span>
-                <span id="statusMessage" class="text-gray-700">—</span>
-            </div>
-        </div>
-
-        <!-- Main Action Cards Grid -->
-        <div class="grid md:grid-cols-2 gap-8 mb-10">
-            
-            <!-- Single Prediction Card - Vibrant Purple Theme -->
-            <div class="glass-card rounded-3xl p-8 card-hover fade-in shadow-2xl">
-                <div class="flex items-center gap-3 mb-2">
-                    <div class="text-3xl">🎯</div>
-                    <h2 class="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                        Next-Day Prediction
-                    </h2>
+        <!-- Header -->
+        <header class="mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900 mb-2">Arecanut Price Forecasting</h1>
+                    <p class="text-gray-600">Machine Learning-Based Price Prediction System</p>
                 </div>
-                <p class="text-gray-600 text-sm mb-6 ml-12">Get tomorrow's forecasted price instantly</p>
-
-                <div class="space-y-4">
-                    <button onclick="predictPrice('adike')" 
-                            id="predictAdike"
-                            class="w-full btn-gradient-purple text-white font-semibold py-4 px-6 rounded-2xl text-base tracking-wide shadow-lg">
-                        <span class="text-xl mr-2">🥥</span> Predict Adike Price
-                    </button>
-                    
-                    <button onclick="predictPrice('patora')" 
-                            id="predictPatora"
-                            class="w-full btn-gradient-pink text-white font-semibold py-4 px-6 rounded-2xl text-base tracking-wide shadow-lg">
-                        <span class="text-xl mr-2">🌰</span> Predict Patora Price
-                    </button>
-                </div>
-
-                <!-- Prediction Result Display -->
-                <div id="predictionResult" class="mt-8 p-6 glass-card rounded-2xl hidden fade-in">
-                    <div class="flex items-center gap-2 mb-4">
-                        <span class="text-2xl">📈</span>
-                        <h3 class="text-sm font-bold text-gray-700 uppercase tracking-wider">Price Forecast</h3>
+                <div class="text-right">
+                    <div id="currentDate" class="text-sm text-gray-500 mono"></div>
+                    <div id="systemStatus" class="mt-2 text-sm">
+                        <span class="status-indicator status-offline"></span>
+                        <span class="text-gray-600">Connecting...</span>
                     </div>
-                    <div id="predictionContent" class="text-center"></div>
                 </div>
             </div>
-
-            <!-- Multi-day Forecast Card - Vibrant Blue Theme -->
-            <div class="glass-card rounded-3xl p-8 card-hover fade-in shadow-2xl">
-                <div class="flex items-center gap-3 mb-2">
-                    <div class="text-3xl">📊</div>
-                    <h2 class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
-                        7-Day Forecast
-                    </h2>
+            
+            <!-- Status Bar -->
+            <div id="statusBar" class="alert alert-info hidden" role="alert">
+                <div class="flex items-center">
+                    <span id="statusMessage" class="text-sm font-medium">System ready</span>
                 </div>
-                <p class="text-gray-600 text-sm mb-6 ml-12">Visualize weekly price trends & predictions</p>
+            </div>
+        </header>
+
+        <!-- Model Information -->
+        <div class="card p-6 mb-8">
+            <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4">Model Configuration</h2>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div>
+                    <div class="data-label">Available Models</div>
+                    <div id="modelCount" class="text-2xl font-semibold text-gray-900">--</div>
+                </div>
+                <div>
+                    <div class="data-label">Sequence Length</div>
+                    <div id="sequenceLength" class="text-2xl font-semibold text-gray-900">--</div>
+                </div>
+                <div>
+                    <div class="data-label">Forecast Days</div>
+                    <div id="forecastDays" class="text-2xl font-semibold text-gray-900">--</div>
+                </div>
+                <div>
+                    <div class="data-label">Model Type</div>
+                    <div class="text-2xl font-semibold text-gray-900">LSTM</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Panels -->
+        <div class="grid md:grid-cols-2 gap-8 mb-8">
+            
+            <!-- Single Day Prediction -->
+            <div class="card p-6">
+                <h2 class="text-xl font-semibold text-gray-900 mb-2">Next-Day Price Prediction</h2>
+                <p class="text-sm text-gray-600 mb-6">Generate single-day forecast for arecanut varieties</p>
                 
-                <div class="space-y-4">
-                    <button onclick="generateForecast('adike')" 
-                            id="forecastAdike"
-                            class="w-full btn-gradient-blue text-white font-semibold py-4 px-6 rounded-2xl text-base tracking-wide shadow-lg">
-                        <span class="text-xl mr-2">📉</span> Adike 7-Day Outlook
+                <div class="space-y-3 mb-6">
+                    <button onclick="predictPrice('adike')" id="predictAdike" class="btn btn-primary w-full">
+                        Predict Adike Price
                     </button>
-                    
-                    <button onclick="generateForecast('patora')" 
-                            id="forecastPatora"
-                            class="w-full btn-gradient-orange text-white font-semibold py-4 px-6 rounded-2xl text-base tracking-wide shadow-lg">
-                        <span class="text-xl mr-2">📈</span> Patora 7-Day Outlook
+                    <button onclick="predictPrice('patora')" id="predictPatora" class="btn btn-secondary w-full">
+                        Predict Patora Price
                     </button>
                 </div>
 
-                <!-- Quick Stats Display -->
-                <div class="mt-8 grid grid-cols-2 gap-4">
-                    <div class="glass-card p-4 rounded-xl text-center">
-                        <div class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">30</div>
-                        <div class="text-xs text-gray-600 mt-1">Days Analyzed</div>
+                <!-- Prediction Result -->
+                <div id="predictionResult" class="hidden">
+                    <div class="border-t border-gray-200 pt-6">
+                        <div class="data-label mb-3">Forecast Result</div>
+                        <div id="predictionContent"></div>
                     </div>
-                    <div class="glass-card p-4 rounded-xl text-center">
-                        <div class="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">7</div>
-                        <div class="text-xs text-gray-600 mt-1">Days Forecast</div>
+                </div>
+            </div>
+
+            <!-- Multi-day Forecast -->
+            <div class="card p-6">
+                <h2 class="text-xl font-semibold text-gray-900 mb-2">7-Day Price Forecast</h2>
+                <p class="text-sm text-gray-600 mb-6">Generate weekly price trend analysis with visualization</p>
+                
+                <div class="space-y-3 mb-6">
+                    <button onclick="generateForecast('adike')" id="forecastAdike" class="btn btn-primary w-full">
+                        Adike 7-Day Forecast
+                    </button>
+                    <button onclick="generateForecast('patora')" id="forecastPatora" class="btn btn-secondary w-full">
+                        Patora 7-Day Forecast
+                    </button>
+                </div>
+
+                <!-- Statistics -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="metric-card">
+                        <div class="data-label">Input Days</div>
+                        <div class="text-xl font-semibold text-gray-900">30</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="data-label">Output Days</div>
+                        <div class="text-xl font-semibold text-gray-900">7</div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Premium Chart Section -->
-        <div class="glass-card rounded-3xl p-8 fade-in shadow-2xl">
-            <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
-                <div class="flex items-center gap-3">
-                    <span class="text-3xl">📊</span>
-                    <h2 class="text-2xl font-bold text-gray-800" id="chartTitle">Price Visualization</h2>
-                </div>
-                <div class="flex items-center gap-2">
-                    <span class="px-4 py-2 bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 rounded-full text-sm font-semibold">
-                        ₹ per Quintal
-                    </span>
-                </div>
+        <!-- Chart Section -->
+        <div class="card p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-semibold text-gray-900" id="chartTitle">Price Forecast Visualization</h2>
+                <span class="badge badge-blue">Rs per Quintal</span>
             </div>
             
-            <div class="chart-container relative w-full" style="height: 450px;">
+            <div class="chart-container" style="height: 400px;">
                 <canvas id="priceChart"></canvas>
             </div>
             
             <div id="chartMessage" class="text-center py-12">
-                <div class="text-6xl mb-4">📈</div>
-                <p class="text-gray-500 text-lg font-medium">Select a forecast option to visualize price trends</p>
-                <p class="text-gray-400 text-sm mt-2">Historical data + AI predictions in one chart</p>
+                <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                </svg>
+                <p class="text-gray-500 font-medium">No data to display</p>
+                <p class="text-gray-400 text-sm mt-1">Select a forecast option to generate visualization</p>
             </div>
         </div>
 
-        <!-- Premium Footer -->
-        <div class="mt-10 text-center fade-in">
-            <div class="glass-card rounded-2xl p-6 inline-block">
-                <div class="flex items-center gap-3 justify-center mb-2">
-                    <div class="w-2 h-2 rounded-full bg-green-500 pulse-dot"></div>
-                    <span class="text-sm font-semibold text-gray-700">System Status</span>
-                </div>
-                <p id="modelInfo" class="text-xs text-gray-600 font-mono">Connecting to AI server...</p>
+        <!-- Footer -->
+        <footer class="mt-8 text-center text-sm text-gray-500">
+            <div class="flex items-center justify-center gap-2 mb-2">
+                <span class="status-indicator status-online"></span>
+                <span id="footerStatus" class="mono">System operational</span>
             </div>
-            <p class="text-white/60 text-xs mt-4">Powered by Deep Learning · Built with ❤️</p>
-        </div>
+            <p>Powered by TensorFlow LSTM Neural Network</p>
+        </footer>
     </div>
 
     <script>
@@ -316,50 +364,67 @@
             let chart = null;
             let availableModels = [];
 
-            // Enhanced status display with colors
+            // Update current date
+            function updateDate() {
+                const el = document.getElementById('currentDate');
+                if (el) {
+                    const d = new Date();
+                    el.textContent = d.toLocaleDateString('en-US', { 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric' 
+                    });
+                }
+            }
+
+            // Show status message
             function showStatus(type, message) {
                 const bar = document.getElementById('statusBar');
                 const msg = document.getElementById('statusMessage');
                 if (!bar) return;
                 
-                bar.classList.remove('hidden', 'border-purple-500', 'border-green-500', 'border-yellow-500', 'border-red-500');
+                bar.classList.remove('hidden', 'alert-success', 'alert-error', 'alert-info', 'alert-warning');
                 
-                const colorMap = {
-                    success: 'border-green-500',
-                    warning: 'border-yellow-500',
-                    error: 'border-red-500',
-                    info: 'border-purple-500'
+                const typeMap = {
+                    success: 'alert-success',
+                    error: 'alert-error',
+                    info: 'alert-info',
+                    warning: 'alert-warning'
                 };
                 
-                bar.classList.add(colorMap[type] || 'border-purple-500');
+                bar.classList.add(typeMap[type] || 'alert-info');
                 msg.textContent = message;
             }
 
-            // Enhanced loading state
+            // Set loading state for button
             function setLoading(btnId, isLoading, originalText) {
                 const btn = document.getElementById(btnId);
                 if (!btn) return;
+                
                 btn.disabled = isLoading;
                 if (isLoading) {
-                    btn.innerHTML = `<span class="inline-block animate-spin mr-2">⚙️</span>Processing...`;
-                    btn.classList.add('opacity-75', 'cursor-wait');
+                    btn.innerHTML = '<span class="spinner"></span>Processing...';
                 } else {
                     btn.innerHTML = originalText;
-                    btn.classList.remove('opacity-75', 'cursor-wait');
                 }
             }
 
-            // Update date with premium styling
-            function updateDate() {
-                const el = document.getElementById('currentDate');
-                if (el) {
-                    const d = new Date();
-                    el.textContent = '🕐 ' + d.toLocaleDateString('en-IN', { 
-                        weekday: 'long', 
-                        year: 'numeric', 
-                        month: 'long', 
-                        day: 'numeric' 
-                    });
+            // Update system status
+            function updateSystemStatus(online, message = '') {
+                const statusEl = document.getElementById('systemStatus');
+                const footerEl = document.getElementById('footerStatus');
+                
+                if (statusEl) {
+                    const indicator = statusEl.querySelector('.status-indicator');
+                    const text = statusEl.querySelector('span:last-child');
+                    
+                    indicator.classList.remove('status-online', 'status-offline', 'status-warning');
+                    indicator.classList.add(online ? 'status-online' : 'status-offline');
+                    text.textContent = message || (online ? 'Connected' : 'Disconnected');
+                }
+                
+                if (footerEl) {
+                    footerEl.textContent = online ? 'System operational' : 'Connection error';
                 }
             }
 
@@ -368,58 +433,66 @@
                 try {
                     const res = await fetch(`${API_BASE}/health`);
                     const data = await res.json();
+                    
                     if (data.status === 'healthy') {
-                        showStatus('success', '✅ Server is online and ready');
+                        updateSystemStatus(true, 'Connected');
+                        showStatus('success', 'Server connection established');
                     } else {
-                        showStatus('warning', '⚠️ Server is responding but unstable');
+                        updateSystemStatus(false, 'Server unstable');
+                        showStatus('warning', 'Server responding but unstable');
                     }
                 } catch (e) {
-                    showStatus('error', '❌ Cannot connect to Flask server (Port 5001)');
+                    updateSystemStatus(false, 'Connection failed');
+                    showStatus('error', 'Cannot connect to prediction server. Please ensure the Flask application is running on port 5001.');
                 }
             }
 
-            // Load available models
+            // Load model information
             async function loadModels() {
                 try {
                     const res = await fetch(`${API_BASE}/models`);
                     const data = await res.json();
+                    
                     availableModels = data.models || [];
-                    const seq = data.config?.sequence_length || 30;
-                    const fcast = data.config?.forecast_days || 7;
+                    const config = data.config || {};
                     
-                    document.getElementById('modelInfo').innerHTML = 
-                        `🤖 Models: <strong>${availableModels.join(' · ') || 'None loaded'}</strong> | Sequence: ${seq}d | Forecast: ${fcast}d`;
+                    document.getElementById('modelCount').textContent = availableModels.length;
+                    document.getElementById('sequenceLength').textContent = config.sequence_length || '--';
+                    document.getElementById('forecastDays').textContent = config.forecast_days || '--';
                     
-                    // Disable buttons if models not available
+                    // Disable buttons for unavailable models
                     if (!availableModels.includes('adike')) {
                         ['predictAdike', 'forecastAdike'].forEach(id => {
                             const btn = document.getElementById(id);
                             if (btn) {
                                 btn.disabled = true;
-                                btn.classList.add('opacity-40', 'cursor-not-allowed');
+                                btn.classList.add('opacity-50', 'cursor-not-allowed');
+                                btn.title = 'Model not available';
                             }
                         });
                     }
+                    
                     if (!availableModels.includes('patora')) {
                         ['predictPatora', 'forecastPatora'].forEach(id => {
                             const btn = document.getElementById(id);
                             if (btn) {
                                 btn.disabled = true;
-                                btn.classList.add('opacity-40', 'cursor-not-allowed');
+                                btn.classList.add('opacity-50', 'cursor-not-allowed');
+                                btn.title = 'Model not available';
                             }
                         });
                     }
                 } catch (e) {
-                    document.getElementById('modelInfo').innerText = '⚠️ Model information unavailable';
+                    console.error('Failed to load models:', e);
+                    showStatus('warning', 'Unable to retrieve model configuration');
                 }
             }
 
             // Single day prediction
             window.predictPrice = async function(type) {
                 const btnId = type === 'adike' ? 'predictAdike' : 'predictPatora';
-                const displayName = type === 'adike' ? 'Adike' : 'Patora';
-                const emoji = type === 'adike' ? '🥥' : '🌰';
-                const originalText = `<span class="text-xl mr-2">${emoji}</span> Predict ${displayName} Price`;
+                const displayName = type.charAt(0).toUpperCase() + type.slice(1);
+                const originalText = `Predict ${displayName} Price`;
                 
                 setLoading(btnId, true, originalText);
                 
@@ -435,40 +508,40 @@
                     
                     const price = result.data.price;
                     const pricePerKg = (price / 100).toFixed(2);
-                    const dateStr = result.data.date || 'Tomorrow';
+                    const dateStr = result.data.date;
                     
                     document.getElementById('predictionResult').classList.remove('hidden');
                     document.getElementById('predictionContent').innerHTML = `
-                        <div class="space-y-3">
-                            <div class="text-sm font-semibold text-gray-500">${displayName} · ${dateStr}</div>
-                            <div class="flex items-baseline justify-center gap-2">
-                                <span class="text-5xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent price-glow">
-                                    ₹${Number(price).toLocaleString('en-IN')}
-                                </span>
-                                <span class="text-lg text-gray-500">/quintal</span>
-                            </div>
-                            <div class="h-px w-24 mx-auto bg-gradient-to-r from-transparent via-purple-300 to-transparent"></div>
-                            <div class="text-2xl font-semibold text-gray-700">
-                                ₹${pricePerKg} <span class="text-sm text-gray-500">/kg</span>
-                            </div>
-                        </div>
+                        <table class="data-table">
+                            <tr>
+                                <th>Variety</th>
+                                <th>Date</th>
+                                <th>Price (Quintal)</th>
+                                <th>Price (Kg)</th>
+                            </tr>
+                            <tr>
+                                <td><span class="badge badge-blue">${displayName}</span></td>
+                                <td class="mono">${dateStr}</td>
+                                <td class="font-semibold">₹${Number(price).toLocaleString('en-IN')}</td>
+                                <td class="text-gray-600">₹${pricePerKg}</td>
+                            </tr>
+                        </table>
                     `;
                     
-                    showStatus('success', `✅ ${displayName} prediction completed successfully`);
+                    showStatus('success', `Prediction completed successfully for ${displayName}`);
                 } catch (err) {
-                    showStatus('error', `❌ ${err.message}`);
+                    showStatus('error', err.message);
                     document.getElementById('predictionResult').classList.add('hidden');
                 } finally {
                     setLoading(btnId, false, originalText);
                 }
             };
 
-            // Multi-day forecast with chart
+            // Multi-day forecast
             window.generateForecast = async function(type) {
                 const btnId = type === 'adike' ? 'forecastAdike' : 'forecastPatora';
-                const displayName = type === 'adike' ? 'Adike' : 'Patora';
-                const emoji = type === 'adike' ? '📉' : '📈';
-                const originalText = `<span class="text-xl mr-2">${emoji}</span> ${displayName} 7-Day Outlook`;
+                const displayName = type.charAt(0).toUpperCase() + type.slice(1);
+                const originalText = `${displayName} 7-Day Forecast`;
                 
                 setLoading(btnId, true, originalText);
                 
@@ -484,17 +557,16 @@
                     
                     const data = result.data;
                     updateChart(data, displayName);
-                    document.getElementById('chartTitle').innerHTML = 
-                        `${displayName} Price Analysis <span class="text-lg text-gray-500">· Historical + Forecast</span>`;
-                    showStatus('success', `✅ ${displayName} 7-day forecast generated`);
+                    document.getElementById('chartTitle').textContent = `${displayName} Price Forecast - Historical & Predicted`;
+                    showStatus('success', `7-day forecast generated successfully for ${displayName}`);
                 } catch (err) {
-                    showStatus('error', `❌ ${err.message}`);
+                    showStatus('error', err.message);
                 } finally {
                     setLoading(btnId, false, originalText);
                 }
             };
 
-            // Enhanced chart with gradients
+            // Update chart
             function updateChart(data, title) {
                 const ctx = document.getElementById('priceChart').getContext('2d');
                 if (chart) chart.destroy();
@@ -503,12 +575,6 @@
                 const prices = [...data.historical.prices, ...data.forecast.prices];
                 const historicalCount = data.historical.prices.length;
 
-                // Create beautiful gradients
-                const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-                gradient.addColorStop(0, 'rgba(102, 126, 234, 0.4)');
-                gradient.addColorStop(0.5, 'rgba(118, 75, 162, 0.2)');
-                gradient.addColorStop(1, 'rgba(102, 126, 234, 0.0)');
-
                 chart = new Chart(ctx, {
                     type: 'line',
                     data: {
@@ -516,22 +582,23 @@
                         datasets: [{
                             label: `${title} Price (₹/quintal)`,
                             data: prices,
-                            borderColor: '#667eea',
-                            backgroundColor: gradient,
-                            borderWidth: 3,
-                            pointRadius: 5,
-                            pointHoverRadius: 8,
+                            borderColor: '#2563eb',
+                            backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                            borderWidth: 2,
+                            pointRadius: 4,
+                            pointHoverRadius: 6,
                             pointBackgroundColor: (ctx) => {
                                 const index = ctx.dataIndex;
-                                return index >= historicalCount ? '#f093fb' : '#667eea';
+                                return index >= historicalCount ? '#64748b' : '#2563eb';
                             },
                             pointBorderColor: '#ffffff',
                             pointBorderWidth: 2,
-                            borderDash: (ctx) => {
-                                const index = ctx.dataIndex;
-                                return (index >= historicalCount) ? [8, 4] : [];
+                            segment: {
+                                borderDash: (ctx) => {
+                                    return ctx.p0DataIndex >= historicalCount - 1 ? [5, 5] : [];
+                                }
                             },
-                            tension: 0.4,
+                            tension: 0.1,
                             fill: true,
                         }]
                     },
@@ -540,27 +607,27 @@
                         maintainAspectRatio: false,
                         plugins: {
                             tooltip: {
-                                backgroundColor: 'rgba(30, 30, 50, 0.95)',
-                                titleColor: '#ffffff',
-                                bodyColor: '#e0e7ff',
-                                borderColor: '#667eea',
-                                borderWidth: 2,
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
                                 padding: 12,
+                                titleColor: '#ffffff',
+                                bodyColor: '#ffffff',
+                                borderColor: '#2563eb',
+                                borderWidth: 1,
                                 displayColors: false,
                                 callbacks: {
-                                    label: (c) => `₹ ${c.parsed.y.toLocaleString('en-IN')} per quintal`,
+                                    label: (c) => `₹${c.parsed.y.toLocaleString('en-IN')} per quintal`,
                                     title: (items) => {
                                         const idx = items[0].dataIndex;
-                                        const type = idx < historicalCount ? '📊 Historical' : '🔮 Forecast';
-                                        return `${type} · ${items[0].label}`;
+                                        const type = idx < historicalCount ? 'Historical' : 'Forecast';
+                                        return `${type} - ${items[0].label}`;
                                     }
                                 }
                             },
                             legend: {
                                 display: true,
                                 labels: {
-                                    color: '#4b5563',
-                                    font: { size: 13, weight: '600' },
+                                    color: '#374151',
+                                    font: { size: 12, weight: '500' },
                                     padding: 15
                                 }
                             }
@@ -568,24 +635,23 @@
                         scales: {
                             y: {
                                 grid: {
-                                    color: 'rgba(156, 163, 175, 0.2)',
+                                    color: '#e5e7eb',
                                     drawBorder: false
                                 },
                                 ticks: {
                                     callback: (v) => '₹' + v.toLocaleString('en-IN'),
                                     color: '#6b7280',
-                                    font: { size: 12, weight: '500' }
+                                    font: { size: 11 }
                                 },
                                 border: { display: false }
                             },
                             x: {
                                 grid: {
-                                    display: false,
-                                    drawBorder: false
+                                    display: false
                                 },
                                 ticks: {
                                     color: '#6b7280',
-                                    font: { size: 11, weight: '500' },
+                                    font: { size: 11 },
                                     maxRotation: 45
                                 },
                                 border: { display: false }
@@ -597,7 +663,7 @@
                 document.getElementById('chartMessage')?.classList.add('hidden');
             }
 
-            // Initialize on page load
+            // Initialize
             document.addEventListener('DOMContentLoaded', async () => {
                 updateDate();
                 await checkHealth();
