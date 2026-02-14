@@ -3,312 +3,369 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Areca Nut Price Predictor & Forecast</title>
+    <title>ArecaNut Price Predictor · Professional Dashboard</title>
+    <!-- Tailwind via CDN + subtle custom polish -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
+        /* minimalist premium touches */
+        .glass-panel {
+            background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(2px);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        .loading-spinner {
+            border: 3px solid #eef2f6;
+            border-top: 3px solid #1e3a8a;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 0.7s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .fade-in {
+            animation: fadeIn 0.4s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .card-hover {
+            transition: all 0.2s ease;
+        }
+        .card-hover:hover {
+            box-shadow: 0 20px 30px -10px rgba(0,20,40,0.15);
+            transform: translateY(-2px);
+        }
+        /* subtle separator */
+        .stat-separator {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #d1d5db, transparent);
         }
     </style>
 </head>
-<body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen p-4">
-    
-    <div class="w-full max-w-md md:max-w-4xl mx-auto bg-white rounded-xl shadow-2xl p-6 md:p-8 mb-6">
-        
-        <div class="text-center mb-6 md:mb-8">
-            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900">Areca Nut Price Predictor</h1>
-            <p id="currentDate" class="text-gray-500 mt-2 text-lg"></p>
+<body class="bg-slate-50 font-slate antialiased min-h-screen flex items-center justify-center p-4 md:p-6">
+    <div class="w-full max-w-7xl mx-auto">
+
+        <!-- Header area – clean, no emojis -->
+        <div class="mb-8 text-left md:text-center fade-in">
+            <h1 class="text-3xl md:text-4xl font-light tracking-tight text-slate-800">ArecaNut price predictor</h1>
+            <p class="text-slate-500 text-sm md:text-base mt-1 font-medium">RNN / LSTM forecasts · Adike · Patora</p>
+            <div id="currentDate" class="text-xs text-slate-400 mt-2 font-mono"></div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-8">
-            <div id="predictionResult" class="flex flex-col items-center justify-center bg-indigo-50 p-6 rounded-xl shadow-inner min-h-[150px]">
-                <p class="text-center text-gray-500">Click a button below to get started.</p>
-            </div>
+        <!-- status bar (refined) -->
+        <div id="statusBar" class="border-l-4 border-slate-400 bg-slate-50 text-slate-700 p-4 mb-6 rounded-r-md hidden fade-in text-sm shadow-sm" role="alert">
+            <span class="font-semibold">status</span> <span id="statusMessage">—</span>
+        </div>
 
-            <div class="flex flex-col space-y-4">
-                <p class="text-xl font-semibold text-gray-700">1. Single-Day Prediction</p>
-                <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
-                    <button onclick="predictPrice('adike')" id="predictAdikeButton" class="flex-1 bg-blue-600 text-white font-bold py-3 px-4 rounded-lg shadow-md transition duration-150 hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-500/50">
-                        Predict Adike Price
+        <!-- main grid -->
+        <div class="grid md:grid-cols-2 gap-7 mb-8">
+            <!-- single prediction card -->
+            <div class="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-7 card-hover fade-in border border-white/40">
+                <div class="flex items-center gap-2 text-slate-700 mb-1">
+                    <span class="text-xl font-light">→</span>
+                    <h2 class="text-lg font-medium tracking-wide">single‑day prediction</h2>
+                </div>
+                <p class="text-slate-400 text-xs uppercase tracking-wider mb-6">tomorrow's price per quintal</p>
+
+                <div class="space-y-3.5">
+                    <button onclick="predictPrice('adike')" 
+                            id="predictAdike"
+                            class="w-full bg-slate-800 hover:bg-slate-900 text-white font-medium py-3.5 px-5 rounded-xl transition duration-200 text-sm tracking-wide shadow-sm">
+                        Predict Adike
                     </button>
-                    <button onclick="predictPrice('patora')" id="predictPatoraButton" class="flex-1 bg-teal-600 text-white font-bold py-3 px-4 rounded-lg shadow-md transition duration-150 hover:bg-teal-700 focus:outline-none focus:ring-4 focus:ring-teal-500/50">
-                        Predict Patora Price
+                    
+                    <button onclick="predictPrice('patora')" 
+                            id="predictPatora"
+                            class="w-full bg-slate-700 hover:bg-slate-800 text-white font-medium py-3.5 px-5 rounded-xl transition duration-200 text-sm tracking-wide shadow-sm">
+                        Predict Patora
                     </button>
                 </div>
+
+                <!-- prediction output (clean) -->
+                <div id="predictionResult" class="mt-7 p-5 bg-slate-50 rounded-xl border border-slate-200 hidden fade-in">
+                    <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">projection</h3>
+                    <div id="predictionContent" class="text-center"></div>
+                </div>
+            </div>
+
+            <!-- forecast card -->
+            <div class="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-7 card-hover fade-in border border-white/40">
+                <div class="flex items-center gap-2 text-slate-700 mb-1">
+                    <span class="text-xl font-light">▸</span>
+                    <h2 class="text-lg font-medium tracking-wide">multi‑day forecast</h2>
+                </div>
+                <p class="text-slate-400 text-xs uppercase tracking-wider mb-6">7‑day outlook + historical</p>
                 
-                <p class="text-xl font-semibold text-gray-700 pt-4 border-t mt-4">2. Price Forecast (7 Days)</p>
-                <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
-                    <button onclick="generateForecast('adike')" id="forecastAdikeButton" class="flex-1 bg-indigo-600 text-white font-bold py-3 px-4 rounded-lg shadow-md transition duration-150 hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-500/50">
-                        Graph Adike Forecast
+                <div class="space-y-3.5">
+                    <button onclick="generateForecast('adike')" 
+                            id="forecastAdike"
+                            class="w-full bg-indigo-50 hover:bg-indigo-100 text-indigo-900 font-medium py-3.5 px-5 rounded-xl transition duration-200 text-sm tracking-wide border border-indigo-200">
+                        Adike forecast
                     </button>
-                    <button onclick="generateForecast('patora')" id="forecastPatoraButton" class="flex-1 bg-purple-600 text-white font-bold py-3 px-4 rounded-lg shadow-md transition duration-150 hover:bg-purple-700 focus:outline-none focus:ring-4 focus:ring-purple-500/50">
-                        Graph Patora Forecast
+                    
+                    <button onclick="generateForecast('patora')" 
+                            id="forecastPatora"
+                            class="w-full bg-purple-50 hover:bg-purple-100 text-purple-900 font-medium py-3.5 px-5 rounded-xl transition duration-200 text-sm tracking-wide border border-purple-200">
+                        Patora forecast
                     </button>
                 </div>
             </div>
         </div>
 
-        <div class="mt-8 pt-6 border-t border-gray-200">
-            <h2 id="forecastTitle" class="text-2xl font-bold text-gray-800 mb-4 text-center">7-Day Price Forecast (Historical + Predicted)</h2>
-            <div id="chartContainer" class="bg-gray-50 p-4 rounded-lg shadow-inner flex items-center justify-center min-h-[300px]">
-                <canvas id="priceChart" class="w-full"></canvas>
-                <p id="chartMessage" class="text-gray-500">Select a type and click a "Graph Forecast" button to view the price trend.</p>
+        <!-- chart section (refined) -->
+        <div class="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6 md:p-7 fade-in border border-white/40">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+                <h2 class="text-md font-medium text-slate-700" id="chartTitle">Price chart</h2>
+                <span class="text-xs bg-slate-100 text-slate-500 px-3 py-1.5 rounded-full font-mono">₹ / quintal</span>
+            </div>
+            <div class="relative w-full" style="height: 380px;">
+                <canvas id="priceChart"></canvas>
+            </div>
+            <div id="chartMessage" class="text-center text-slate-400 text-sm py-6 italic border-t border-slate-100 mt-5">
+                Select a forecast to display chart
             </div>
         </div>
 
+        <!-- footer model info (minimal) -->
+        <div class="mt-8 text-center text-xs text-slate-400 border-t border-slate-200/60 pt-6 fade-in">
+            <p id="modelInfo" class="font-mono tracking-tight">connecting to model server…</p>
+        </div>
     </div>
 
     <script>
-        // *** FIX APPLIED: Corrected to standard local host API URL for Flask backend ***
-        // Use the local host IP and the port your Flask API is running on (e.g., 5001)
-        // Note: The port 5001 is a common assumption for Flask. Change if your Flask app uses a different port.
-        const BASE_API_URL = 'http://127.0.0.1:5001'; 
-        
-        // DOM Elements
-        const resultDiv = document.getElementById('predictionResult');
-        const adikeButton = document.getElementById('predictAdikeButton');
-        const patoraButton = document.getElementById('predictPatoraButton');
-        const forecastAdikeButton = document.getElementById('forecastAdikeButton');
-        const forecastPatoraButton = document.getElementById('forecastPatoraButton');
-        const chartContainer = document.getElementById('chartContainer');
-        const chartMessage = document.getElementById('chartMessage');
-        const forecastTitle = document.getElementById('forecastTitle');
-        let priceChartInstance = null; // Variable to hold the Chart.js instance
+        (function() {
+            const API_BASE = 'http://127.0.0.1:5001';
+            let chart = null;
+            let availableModels = [];
 
-        document.addEventListener('DOMContentLoaded', () => {
-            // Display current date on load
-            document.getElementById('currentDate').textContent = `Today: ${new Date().toLocaleDateString('en-IN', { dateStyle: 'full' })}`;
-            // Initially hide the canvas and show the message
-            document.getElementById('priceChart').classList.add('hidden');
-        });
-        
-        // --- 1. Single-Day Prediction Logic ---
-
-        async function predictPrice(type) {
-            const button = type === 'adike' ? adikeButton : patoraButton;
-            const otherButton = type === 'adike' ? patoraButton : adikeButton;
-            const displayType = type.charAt(0).toUpperCase() + type.slice(1);
-            
-            // Disable buttons and show loading state
-            button.disabled = true;
-            otherButton.disabled = true;
-            button.textContent = `Predicting...`;
-            resultDiv.innerHTML = `<div class="text-center"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-700 mx-auto"></div><p class="mt-2 text-indigo-700">Calculating tomorrow's price...</p></div>`;
-
-            try {
-                // CORRECTED: Requesting the endpoint /predict on the API base URL
-                const response = await fetch(`${BASE_API_URL}/predict`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ type: type })
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json().catch(() => ({ error: 'Failed to parse server response.' }));
-                    throw new Error(errorData.error || `Server returned status ${response.status}.`);
+            // helper: show status (clean styling)
+            function showStatus(type, message) {
+                const bar = document.getElementById('statusBar');
+                const msg = document.getElementById('statusMessage');
+                if (!bar) return;
+                bar.classList.remove('hidden', 'bg-green-50', 'bg-yellow-50', 'bg-red-50', 'border-green-500', 'border-yellow-500', 'border-red-500', 'text-green-800', 'text-yellow-800', 'text-red-800');
+                
+                if (type === 'success') {
+                    bar.classList.add('bg-green-50', 'border-green-500', 'text-green-800');
+                } else if (type === 'warning') {
+                    bar.classList.add('bg-yellow-50', 'border-yellow-500', 'text-yellow-800');
+                } else if (type === 'error') {
+                    bar.classList.add('bg-red-50', 'border-red-500', 'text-red-800');
+                } else {
+                    bar.classList.add('bg-slate-50', 'border-slate-400', 'text-slate-700');
                 }
-
-                const data = await response.json();
-                
-                // Calculate price per Kilogram and format to 2 decimal places
-                const pricePerKg = (data.predicted_price / 100).toFixed(2);
-                const predictedPriceQuintal = data.predicted_price.toLocaleString('en-IN', { minimumFractionDigits: 2 });
-                const pricePerKgFormatted = pricePerKg.toLocaleString('en-IN');
-
-
-                // Display results with improved alignment
-                resultDiv.innerHTML = `
-                    <div class="text-center bg-white p-4 rounded-lg shadow-lg border-t-4 border-indigo-600">
-                        <p class="text-sm text-gray-600 font-medium">Predicted Price for ${displayType} Tomorrow</p>
-                        <div class="flex justify-center items-end mt-2">
-                            <span class="text-xl font-extrabold text-indigo-700 mr-1">₹</span>
-                            <span class="text-5xl font-extrabold text-indigo-700">${predictedPriceQuintal}</span>
-                            <span class="text-base text-gray-500 ml-1 pb-1 font-semibold text-end">(Quintal)</span>
-                        </div>
-                        
-                        <div class="text-center mt-4 pt-3 border-t border-gray-200">
-                            <span class="text-xl text-gray-800 font-semibold">~ ₹ ${pricePerKgFormatted}</span>
-                            <span class="text-base text-gray-500 ml-1 font-semibold text-end">/ kg</span>
-                        </div>
-                    </div>
-                `;
-
-            } catch (error) {
-                console.error('Prediction Error:', error);
-                // Updated troubleshooting message for local host
-                resultDiv.innerHTML = `<p class="text-red-600 font-semibold">Connection Failed.</p><p class="text-xs text-gray-500 mt-1">Error: ${error.message}</p><p class="text-xs text-gray-500 mt-2">**TROUBLESHOOTING:** Ensure your Flask API is running on **http://127.0.0.1:5001**.</p>`;
-            } finally {
-                // Re-enable both buttons and restore their original text
-                adikeButton.disabled = false;
-                patoraButton.disabled = false;
-                adikeButton.textContent = "Predict Adike Price";
-                patoraButton.textContent = "Predict Patora Price";
+                msg.textContent = message;
             }
-        }
 
-        // --- 2. 7-Day Forecast Graph Logic ---
-
-        async function generateForecast(type) {
-            const button = type === 'adike' ? forecastAdikeButton : forecastPatoraButton;
-            const otherButton = type === 'adike' ? forecastPatoraButton : forecastAdikeButton;
-            const displayType = type.charAt(0).toUpperCase() + type.slice(1);
-
-            // Disable buttons and show loading state
-            button.disabled = true;
-            otherButton.disabled = true;
-            button.textContent = `Generating Graph...`;
-            chartMessage.textContent = `Fetching and calculating 7-day forecast for ${displayType}...`;
-            chartMessage.classList.remove('hidden');
-            document.getElementById('priceChart').classList.add('hidden');
-
-            try {
-                // CORRECTED: Requesting the endpoint /historical_and_forecast_data on the API base URL
-                const response = await fetch(`${BASE_API_URL}/historical_and_forecast_data`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ type: type })
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json().catch(() => ({ error: 'Failed to parse server response.' }));
-                    throw new Error(errorData.error || `Server returned status ${response.status}.`);
+            // loading toggle (professional text)
+            function setLoading(btnId, isLoading, originalText) {
+                const btn = document.getElementById(btnId);
+                if (!btn) return;
+                btn.disabled = isLoading;
+                if (isLoading) {
+                    btn.innerHTML = `<span class="inline-block mr-2">⏳</span>processing...`;
+                } else {
+                    btn.innerHTML = originalText;
                 }
-
-                const data = await response.json();
-                
-                // Combine labels and data for plotting: Historical (oldest) first, then Forecast (newest)
-                const allLabels = data.historical_dates.concat(data.forecast_dates);
-                const allData = data.historical_prices.concat(data.forecast_prices);
-                
-                // Index where the forecast begins (first day of forecast)
-                const forecastStartPoint = data.historical_prices.length;
-
-                drawChart(allLabels, allData, displayType, forecastStartPoint);
-                forecastTitle.textContent = `${displayType} Price Forecast (Last ${data.historical_dates.length} Days + 7-Day Prediction)`;
-                chartMessage.classList.add('hidden');
-                document.getElementById('priceChart').classList.remove('hidden');
-
-
-            } catch (error) {
-                console.error('Forecast Error:', error);
-                // Updated troubleshooting message for local host
-                chartMessage.textContent = `Connection Failed. Error: ${error.message}. TROUBLESHOOTING: Ensure your Flask API is running on http://127.0.0.1:5001.`;
-                chartMessage.classList.remove('hidden');
-                document.getElementById('priceChart').classList.add('hidden');
-
-            } finally {
-                // Re-enable buttons and restore original text
-                forecastAdikeButton.disabled = false;
-                forecastPatoraButton.disabled = false;
-                forecastAdikeButton.textContent = "Graph Adike Forecast";
-                forecastPatoraButton.textContent = "Graph Patora Forecast";
-            }
-        }
-
-        function drawChart(labels, data, title, forecastStart) {
-            const ctx = document.getElementById('priceChart').getContext('2d');
-            
-            // Destroy existing chart instance if it exists
-            if (priceChartInstance) {
-                priceChartInstance.destroy();
             }
 
-            // Function to create a custom dashed line for the forecast segment
-            const lineSegments = data.map((value, index) => {
-                // Apply a dashed line style starting from the forecast point
-                return index >= forecastStart ? { borderDash: [5, 5] } : {};
-            });
-            
-            // Create a gradient background for the historical data
-            const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-            const primaryColor = title === 'Adike' ? 'rgb(59, 130, 246)' : 'rgb(20, 184, 166)'; // Blue or Teal
-            gradient.addColorStop(0, primaryColor.replace('rgb', 'rgba').replace(')', ', 0.4)')); 
-            gradient.addColorStop(1, primaryColor.replace('rgb', 'rgba').replace(')', ', 0.0)')); 
+            // update current date elegantly
+            function updateDate() {
+                const el = document.getElementById('currentDate');
+                if (el) {
+                    const d = new Date();
+                    el.textContent = d.toLocaleDateString('en-IN', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
+                }
+            }
 
-            priceChartInstance = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels, // These are the dates, ordered old to new (Left to Right)
-                    datasets: [{
-                        label: `${title} Price (Rs./Quintal)`,
-                        data: data, // Prices, ordered old to new
-                        backgroundColor: gradient,
-                        borderColor: primaryColor,
-                        borderWidth: 3,
-                        tension: 0.2, // Smoother line
-                        fill: true,
-                        pointRadius: 5,
-                        pointHoverRadius: 8,
-                        segment: lineSegments // Apply dashed line only to the forecast
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false, // Allows chart to fill container
-                    scales: {
-                        y: {
-                            beginAtZero: false,
-                            title: {
-                                display: true,
-                                text: 'Price (Rs./Quintal)',
-                                font: { size: 14, weight: 'bold' }
+            // health check & model load
+            async function checkHealth() {
+                try {
+                    const res = await fetch(`${API_BASE}/health`);
+                    const data = await res.json();
+                    if (data.status === 'healthy') showStatus('success', 'server ready');
+                    else showStatus('warning', 'server unstable');
+                } catch (e) {
+                    showStatus('error', 'cannot reach flask (port 5001)');
+                }
+            }
+
+            async function loadModels() {
+                try {
+                    const res = await fetch(`${API_BASE}/models`);
+                    const data = await res.json();
+                    availableModels = data.models || [];
+                    const seq = data.config?.sequence_length || 30;
+                    const fcast = data.config?.forecast_days || 7;
+                    document.getElementById('modelInfo').innerText = 
+                        `models: ${availableModels.join(' · ') || 'none'}  |  sequence ${seq}d  ·  forecast ${fcast}d`;
+                    
+                    // disable buttons if model missing
+                    if (!availableModels.includes('adike')) {
+                        const adikePredict = document.getElementById('predictAdike');
+                        const adikeForecast = document.getElementById('forecastAdike');
+                        if (adikePredict) { adikePredict.disabled = true; adikePredict.classList.add('opacity-40', 'cursor-not-allowed'); }
+                        if (adikeForecast) { adikeForecast.disabled = true; adikeForecast.classList.add('opacity-40', 'cursor-not-allowed'); }
+                    }
+                    if (!availableModels.includes('patora')) {
+                        const patPredict = document.getElementById('predictPatora');
+                        const patForecast = document.getElementById('forecastPatora');
+                        if (patPredict) { patPredict.disabled = true; patPredict.classList.add('opacity-40', 'cursor-not-allowed'); }
+                        if (patForecast) { patForecast.disabled = true; patForecast.classList.add('opacity-40', 'cursor-not-allowed'); }
+                    }
+                } catch (e) {
+                    document.getElementById('modelInfo').innerText = 'model info unavailable';
+                }
+            }
+
+            // ---------- prediction ----------
+            window.predictPrice = async function(type) {
+                const btnId = type === 'adike' ? 'predictAdike' : 'predictPatora';
+                const displayName = type === 'adike' ? 'Adike' : 'Patora';
+                setLoading(btnId, true, `Predict ${displayName}`);
+                try {
+                    const res = await fetch(`${API_BASE}/predict`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ type })
+                    });
+                    const result = await res.json();
+                    if (!res.ok) throw new Error(result.error || 'failed');
+                    
+                    const price = result.data.price; // per quintal
+                    const pricePerKg = (price / 100).toFixed(2);
+                    const dateStr = result.data.date || 'tomorrow';
+                    
+                    document.getElementById('predictionResult').classList.remove('hidden');
+                    document.getElementById('predictionContent').innerHTML = `
+                        <div class="space-y-1">
+                            <span class="text-xs text-slate-400 font-mono">${displayName} · ${dateStr}</span>
+                            <div class="flex items-baseline justify-center gap-1 mt-1">
+                                <span class="text-3xl font-light text-slate-800">₹${Number(price).toLocaleString('en-IN')}</span>
+                                <span class="text-xs text-slate-400">/quintal</span>
+                            </div>
+                            <div class="stat-separator w-16 mx-auto my-2"></div>
+                            <span class="text-sm text-slate-500">₹${pricePerKg} <span class="text-xs">/kg</span></span>
+                        </div>
+                    `;
+                    showStatus('success', `${displayName} prediction ready`);
+                } catch (err) {
+                    showStatus('error', err.message);
+                    document.getElementById('predictionResult').classList.add('hidden');
+                } finally {
+                    setLoading(btnId, false, `Predict ${displayName}`);
+                }
+            };
+
+            // ---------- forecast + chart ----------
+            window.generateForecast = async function(type) {
+                const btnId = type === 'adike' ? 'forecastAdike' : 'forecastPatora';
+                const displayName = type === 'adike' ? 'Adike' : 'Patora';
+                setLoading(btnId, true, `${displayName} forecast`);
+                try {
+                    const res = await fetch(`${API_BASE}/forecast`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ type })
+                    });
+                    const result = await res.json();
+                    if (!res.ok) throw new Error(result.error || 'forecast error');
+                    
+                    const data = result.data;
+                    updateChart(data, displayName);
+                    document.getElementById('chartTitle').innerText = `${displayName} price · last 7 days + 7‑day forecast`;
+                    showStatus('success', `${displayName} forecast updated`);
+                } catch (err) {
+                    showStatus('error', err.message);
+                } finally {
+                    setLoading(btnId, false, `${displayName} forecast`);
+                }
+            };
+
+            function updateChart(data, title) {
+                const ctx = document.getElementById('priceChart').getContext('2d');
+                if (chart) chart.destroy();
+
+                const labels = [...data.historical.dates, ...data.forecast.dates];
+                const prices = [...data.historical.prices, ...data.forecast.prices];
+                const historicalCount = data.historical.prices.length;
+
+                // subtle gradient
+                const gradient = ctx.createLinearGradient(0, 0, 0, 350);
+                gradient.addColorStop(0, 'rgba(30, 58, 138, 0.12)');
+                gradient.addColorStop(1, 'rgba(30, 58, 138, 0.0)');
+
+                chart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: `${title} (₹/quintal)`,
+                            data: prices,
+                            borderColor: '#1e3a8a',
+                            backgroundColor: gradient,
+                            borderWidth: 2.5,
+                            pointRadius: 3,
+                            pointHoverRadius: 5,
+                            pointBackgroundColor: (ctx) => {
+                                const index = ctx.dataIndex;
+                                return index >= historicalCount ? '#6b7280' : '#1e3a8a';
                             },
-                            ticks: {
-                                callback: function(value, index, ticks) {
-                                    // Use Indian currency formatting in the Y-axis ticks
-                                    return '₹' + value.toLocaleString('en-IN');
-                                }
-                            }
-                        },
-                        x: {
-                            // This ensures the X-axis treats labels as categories 
-                            // and plots them sequentially in the order provided (old to new).
-                            type: 'category', 
-                            title: {
-                                display: true,
-                                text: 'Date',
-                                font: { size: 14, weight: 'bold' }
-                            }
-                        }
+                            borderDash: (ctx) => {
+                                const index = ctx.dataIndex;
+                                return (index >= historicalCount) ? [5, 3] : [];
+                            },
+                            tension: 0.2,
+                            fill: true,
+                        }]
                     },
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'top',
-                            labels: {
-                                font: { size: 14 }
-                            }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                title: function(context) {
-                                    const index = context[0].dataIndex;
-                                    const dateLabel = labels[index];
-                                    // Explicitly show if the point is Historical or Forecast based on its index
-                                    return index < forecastStart ? `Historical: ${dateLabel}` : `Forecast: ${dateLabel}`;
-                                },
-                                label: function(context) {
-                                    let label = context.dataset.label || '';
-                                    if (label) {
-                                        label += ': ';
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            tooltip: {
+                                backgroundColor: '#1e293b',
+                                titleColor: '#f1f5f9',
+                                bodyColor: '#cbd5e1',
+                                callbacks: {
+                                    label: (c) => ` ₹ ${c.parsed.y.toLocaleString('en-IN')} /quintal`,
+                                    title: (items) => {
+                                        const idx = items[0].dataIndex;
+                                        return idx < historicalCount ? `historical · ${items[0].label}` : `forecast · ${items[0].label}`;
                                     }
-                                    if (context.parsed.y !== null) {
-                                        // Use Indian currency formatting in the tooltip label
-                                        label += '₹' + context.parsed.y.toLocaleString('en-IN');
-                                    }
-                                    return label;
                                 }
+                            },
+                            legend: { display: false }
+                        },
+                        scales: {
+                            y: { 
+                                grid: { color: '#e9eef3' },
+                                ticks: { callback: (v) => '₹' + v.toLocaleString('en-IN') },
+                                title: { display: false }
+                            },
+                            x: { 
+                                grid: { display: false },
+                                ticks: { maxRotation: 35, font: { size: 11 } }
                             }
                         }
                     }
-                }
-            });
-            // Setting a fixed height on the container ensures Chart.js renders predictably.
-            chartContainer.style.height = '400px'; 
-        }
+                });
+                document.getElementById('chartMessage')?.classList.add('hidden');
+            }
 
+            // init
+            document.addEventListener('DOMContentLoaded', async () => {
+                updateDate();
+                await checkHealth();
+                await loadModels();
+            });
+        })();
     </script>
 </body>
 </html>

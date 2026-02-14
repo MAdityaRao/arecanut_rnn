@@ -1,0 +1,198 @@
+
+# 🌴 Arecanut Price Forecasting using RNN
+
+[![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)]()
+[![TensorFlow](https://img.shields.io/badge/TensorFlow-Deep%20Learning-orange.svg)]()
+[![License](https://img.shields.io/badge/License-MIT-green.svg)]()
+
+Time-series forecasting project that predicts **Arecanut (Adike) market prices** using Recurrent Neural Networks (RNN).
+Built as part of an academic and research-focused Data Analytics initiative.
+
+---
+
+## 📌 Overview
+
+Agricultural commodity prices are highly volatile. This project applies Deep Learning techniques to:
+
+* Analyze historical arecanut price data
+* Model temporal dependencies
+* Predict future market prices
+* Demonstrate real-world ML deployment using Flask
+
+This repository contains:
+
+* Data preprocessing pipeline
+* RNN model training notebooks
+* Saved model & scaler
+* Web interface for predictions
+
+---
+
+## 🧠 Model Architecture
+
+```text
+Input (30-day sequence)
+        ↓
+SimpleRNN (50 units, return_sequences=True)
+        ↓
+SimpleRNN (50 units)
+        ↓
+Dense (1 output)
+        ↓
+Predicted Price
+```
+
+**Configuration**
+
+* Optimizer: Adam
+* Loss Function: Mean Squared Error (MSE)
+* Sequence Length: 30
+* Epochs: 100
+* Batch Size: 32
+
+---
+
+## 📂 Project Structure
+
+```
+ARECANUT_RNN/
+│
+├── arecanut.csv              # Historical price dataset
+├── rnn_adike.ipynb           # Training notebook (Adike market)
+├── rnn_patora.ipynb          # Training notebook (Patora market)
+├── model_adike.h5 
+├── model_patora.h5           # Trained RNN model
+├── scaler_adike.gz
+├── scaler_patora.gz          # Saved MinMaxScaler
+├── app.py                    # Flask backend
+├── index.html                # Frontend interface
+├── .venv/                    # Virtual environment
+└── README.md
+```
+
+---
+
+## ⚙️ Installation
+
+### 1️⃣ Clone the repository
+
+```bash
+git clone https://github.com/MAdityaRao/arecanut_rnn.git
+cd arecanut_rnn
+```
+
+### 2️⃣ Create virtual environment
+
+```bash
+python -m venv venv
+source venv/bin/activate      # macOS/Linux
+venv\Scripts\activate         # Windows
+```
+
+### 3️⃣ Install dependencies
+
+```bash
+pip install pandas numpy scikit-learn tensorflow flask joblib
+```
+
+---
+
+## 🚀 Training the Model
+
+Open and run:
+
+```
+rnn_adike.ipynb
+```
+
+This will:
+
+* Preprocess data
+* Train the RNN model
+* Save `model_adike.h5`
+* Save `scaler_adike.gz`
+
+---
+
+## 🌐 Running the Web Application
+
+```bash
+python app.py
+```
+
+Then open:
+
+```
+http://127.0.0.1:5000
+```
+
+The app allows users to input price sequences and get predictions.
+
+---
+
+## 📊 Data Pipeline
+
+1. Convert `Price Date` to datetime
+2. Sort chronologically
+3. Scale prices using MinMaxScaler
+4. Generate 30-day sliding window sequences
+5. Train-test split (80/20)
+
+---
+
+## 📈 Example Training Output
+
+```
+Epoch 1/100
+81/81 [==============================] - loss: 0.0201
+```
+
+---
+
+## 🔬 Future Improvements
+
+* Replace SimpleRNN with LSTM/GRU
+* Add multivariate inputs (rainfall, export data, demand)
+* Implement evaluation metrics (RMSE, MAE, R²)
+* Add model comparison (ARIMA vs RNN vs LSTM)
+* Deploy using Docker / AWS / Streamlit
+* Add CI/CD workflow
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome!
+
+1. Fork the repository
+2. Create a new branch
+3. Commit changes
+4. Open a Pull Request
+
+Please ensure:
+
+* Code is clean and documented
+* No hardcoded paths
+* Proper commit messages
+
+---
+
+## 👨‍💻 Author
+
+**Aditya**
+BSc Data Analytics
+AI & Predictive Systems Developer
+
+GitHub: [https://github.com/MAdityaRao](https://github.com/MAdityaRao)
+
+---
+
+## ⭐ Support
+
+If you found this project useful:
+
+* ⭐ Star the repository
+* 🍴 Fork it
+* 🧠 Suggest improvements
+
+--------------------------------------------
