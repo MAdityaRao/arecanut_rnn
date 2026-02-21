@@ -3,673 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arecanut Price Forecasting System</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Adike · Price Predictor</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Mono&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
-        
-        * {
-            font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-        }
-
-        body {
-            background-color: #f8f9fa;
-            color: #1a1a1a;
-        }
-
-        .mono {
-            font-family: 'IBM Plex Mono', monospace;
-        }
-
-        /* Professional card styling */
-        .card {
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-            transition: box-shadow 0.2s ease;
-        }
-
-        .card:hover {
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
-        }
-
-        /* Professional buttons */
-        .btn {
-            font-weight: 500;
-            padding: 0.75rem 1.5rem;
-            border-radius: 6px;
-            transition: all 0.2s ease;
-            border: none;
-            cursor: pointer;
-            font-size: 0.95rem;
-        }
-
-        .btn-primary {
-            background-color: #2563eb;
-            color: white;
-        }
-
-        .btn-primary:hover:not(:disabled) {
-            background-color: #1d4ed8;
-        }
-
-        .btn-secondary {
-            background-color: #64748b;
-            color: white;
-        }
-
-        .btn-secondary:hover:not(:disabled) {
-            background-color: #475569;
-        }
-
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        /* Status indicators */
-        .status-indicator {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            margin-right: 8px;
-        }
-
-        .status-online {
-            background-color: #10b981;
-            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
-        }
-
-        .status-offline {
-            background-color: #ef4444;
-            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
-        }
-
-        .status-warning {
-            background-color: #f59e0b;
-            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
-        }
-
-        /* Alert messages */
-        .alert {
-            padding: 1rem 1.25rem;
-            border-radius: 6px;
-            border-left: 4px solid;
-            margin-bottom: 1.5rem;
-        }
-
-        .alert-success {
-            background-color: #f0fdf4;
-            border-color: #10b981;
-            color: #065f46;
-        }
-
-        .alert-error {
-            background-color: #fef2f2;
-            border-color: #ef4444;
-            color: #991b1b;
-        }
-
-        .alert-info {
-            background-color: #eff6ff;
-            border-color: #2563eb;
-            color: #1e3a8a;
-        }
-
-        .alert-warning {
-            background-color: #fffbeb;
-            border-color: #f59e0b;
-            color: #92400e;
-        }
-
-        /* Loading spinner */
-        .spinner {
-            border: 2px solid #e5e7eb;
-            border-top-color: #2563eb;
-            border-radius: 50%;
-            width: 16px;
-            height: 16px;
-            animation: spin 0.6s linear infinite;
-            display: inline-block;
-            margin-right: 8px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Chart container */
-        .chart-container {
-            position: relative;
-            background: white;
-            border-radius: 8px;
-            padding: 1.5rem;
-        }
-
-        /* Data display */
-        .data-label {
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: #6b7280;
-            margin-bottom: 0.25rem;
-        }
-
-        .data-value {
-            font-size: 2rem;
-            font-weight: 600;
-            color: #1a1a1a;
-        }
-
-        /* Table styling */
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .data-table th {
-            background-color: #f9fafb;
-            border-bottom: 2px solid #e5e7eb;
-            padding: 0.75rem 1rem;
-            text-align: left;
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: #374151;
-        }
-
-        .data-table td {
-            border-bottom: 1px solid #e5e7eb;
-            padding: 0.75rem 1rem;
-            font-size: 0.875rem;
-            color: #1a1a1a;
-        }
-
-        .data-table tr:hover {
-            background-color: #f9fafb;
-        }
-
-        /* Badge */
-        .badge {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            font-size: 0.75rem;
-            font-weight: 500;
-        }
-
-        .badge-blue {
-            background-color: #dbeafe;
-            color: #1e40af;
-        }
-
-        .badge-gray {
-            background-color: #f3f4f6;
-            color: #374151;
-        }
-
-        /* Metric card */
-        .metric-card {
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            padding: 1.5rem;
-        }
-
-        .hidden {
-            display: none;
-        }
+        :root { --bg: #0c0f0e; --surface: #141918; --accent: #b5e4c4; --text: #e8ede9; --muted: rgba(232,237,233,0.45); }
+        body { background: var(--bg); color: var(--text); font-family: 'Outfit', sans-serif; display: flex; justify-content: center; padding: 2rem; }
+        .wrapper { width: 100%; max-width: 400px; }
+        .header { margin-bottom: 2rem; }
+        .title { font-family: 'DM Serif Display', serif; font-size: 2.5rem; }
+        .status { display: none; font-family: 'DM Mono', monospace; font-size: 0.7rem; padding: 0.5rem; border-radius: 4px; margin-bottom: 1rem; border: 1px solid rgba(168,213,181,0.2); color: var(--accent); }
+        .card { background: var(--surface); border-radius: 12px; padding: 1.5rem; border: 1px solid rgba(255,255,255,0.05); }
+        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1rem; }
+        .btn { background: rgba(168,213,181,0.1); border: 1px solid rgba(168,213,181,0.3); color: var(--accent); padding: 0.8rem; border-radius: 8px; cursor: pointer; font-family: inherit; transition: 0.2s; }
+        .btn:hover { background: rgba(168,213,181,0.2); }
+        .result-row { display: flex; justify-content: space-between; align-items: center; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1); }
+        .price { font-family: 'DM Serif Display', serif; font-size: 1.5rem; color: var(--accent); }
+        .date { font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--muted); }
     </style>
 </head>
-<body class="min-h-screen p-4 md:p-8">
-    <div class="max-w-7xl mx-auto">
+<body>
+    <div class="wrapper">
+        <div class="header">
+            <h1 class="title">Adike Predict</h1>
+            <p style="color:var(--muted)">Tomorrow's price prediction</p>
+        </div>
 
-        <!-- Header -->
-        <header class="mb-8">
-            <div class="flex items-center justify-between mb-4">
-                <div>
-                    <h1 class="text-3xl font-bold text-gray-900 mb-2">Arecanut Price Forecasting</h1>
-                    <p class="text-gray-600">Machine Learning-Based Price Prediction System</p>
-                </div>
-                <div class="text-right">
-                    <div id="currentDate" class="text-sm text-gray-500 mono"></div>
-                    <div id="systemStatus" class="mt-2 text-sm">
-                        <span class="status-indicator status-offline"></span>
-                        <span class="text-gray-600">Connecting...</span>
+        <div class="status" id="status">Server Ready</div>
+
+        <div class="card">
+            <div class="btn-group">
+                <button class="btn" onclick="predict('adike')">Adike</button>
+                <button class="btn" onclick="predict('patora')">Patora</button>
+            </div>
+            <div id="results" style="display:none">
+                <div class="result-row">
+                    <div>
+                        <div id="res-name" style="font-weight:500">Variety</div>
+                        <div id="res-date" class="date">Date</div>
                     </div>
-                </div>
-            </div>
-            
-            <!-- Status Bar -->
-            <div id="statusBar" class="alert alert-info hidden" role="alert">
-                <div class="flex items-center">
-                    <span id="statusMessage" class="text-sm font-medium">System ready</span>
-                </div>
-            </div>
-        </header>
-
-        <!-- Model Information -->
-        <div class="card p-6 mb-8">
-            <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4">Model Configuration</h2>
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <div>
-                    <div class="data-label">Available Models</div>
-                    <div id="modelCount" class="text-2xl font-semibold text-gray-900">--</div>
-                </div>
-                <div>
-                    <div class="data-label">Sequence Length</div>
-                    <div id="sequenceLength" class="text-2xl font-semibold text-gray-900">--</div>
-                </div>
-                <div>
-                    <div class="data-label">Forecast Days</div>
-                    <div id="forecastDays" class="text-2xl font-semibold text-gray-900">--</div>
-                </div>
-                <div>
-                    <div class="data-label">Model Type</div>
-                    <div class="text-2xl font-semibold text-gray-900">LSTM</div>
+                    <div id="res-price" class="price">₹0</div>
                 </div>
             </div>
         </div>
-
-        <!-- Action Panels -->
-        <div class="grid md:grid-cols-2 gap-8 mb-8">
-            
-            <!-- Single Day Prediction -->
-            <div class="card p-6">
-                <h2 class="text-xl font-semibold text-gray-900 mb-2">Next-Day Price Prediction</h2>
-                <p class="text-sm text-gray-600 mb-6">Generate single-day forecast for arecanut varieties</p>
-                
-                <div class="space-y-3 mb-6">
-                    <button onclick="predictPrice('adike')" id="predictAdike" class="btn btn-primary w-full">
-                        Predict Adike Price
-                    </button>
-                    <button onclick="predictPrice('patora')" id="predictPatora" class="btn btn-secondary w-full">
-                        Predict Patora Price
-                    </button>
-                </div>
-
-                <!-- Prediction Result -->
-                <div id="predictionResult" class="hidden">
-                    <div class="border-t border-gray-200 pt-6">
-                        <div class="data-label mb-3">Forecast Result</div>
-                        <div id="predictionContent"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Multi-day Forecast -->
-            <div class="card p-6">
-                <h2 class="text-xl font-semibold text-gray-900 mb-2">7-Day Price Forecast</h2>
-                <p class="text-sm text-gray-600 mb-6">Generate weekly price trend analysis with visualization</p>
-                
-                <div class="space-y-3 mb-6">
-                    <button onclick="generateForecast('adike')" id="forecastAdike" class="btn btn-primary w-full">
-                        Adike 7-Day Forecast
-                    </button>
-                    <button onclick="generateForecast('patora')" id="forecastPatora" class="btn btn-secondary w-full">
-                        Patora 7-Day Forecast
-                    </button>
-                </div>
-
-                <!-- Statistics -->
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="metric-card">
-                        <div class="data-label">Input Days</div>
-                        <div class="text-xl font-semibold text-gray-900">30</div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="data-label">Output Days</div>
-                        <div class="text-xl font-semibold text-gray-900">7</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Chart Section -->
-        <div class="card p-6">
-            <div class="flex items-center justify-between mb-6">
-                <h2 class="text-xl font-semibold text-gray-900" id="chartTitle">Price Forecast Visualization</h2>
-                <span class="badge badge-blue">Rs per Quintal</span>
-            </div>
-            
-            <div class="chart-container" style="height: 400px;">
-                <canvas id="priceChart"></canvas>
-            </div>
-            
-            <div id="chartMessage" class="text-center py-12">
-                <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-                </svg>
-                <p class="text-gray-500 font-medium">No data to display</p>
-                <p class="text-gray-400 text-sm mt-1">Select a forecast option to generate visualization</p>
-            </div>
-        </div>
-
-        <!-- Footer -->
-        <footer class="mt-8 text-center text-sm text-gray-500">
-            <div class="flex items-center justify-center gap-2 mb-2">
-                <span class="status-indicator status-online"></span>
-                <span id="footerStatus" class="mono">System operational</span>
-            </div>
-            <p>Powered by TensorFlow LSTM Neural Network</p>
-        </footer>
     </div>
 
     <script>
-        (function() {
-            const API_BASE = 'http://127.0.0.1:5001';
-            let chart = null;
-            let availableModels = [];
+        const API = 'http://127.0.0.1:5001';
 
-            // Update current date
-            function updateDate() {
-                const el = document.getElementById('currentDate');
-                if (el) {
-                    const d = new Date();
-                    el.textContent = d.toLocaleDateString('en-US', { 
-                        year: 'numeric', 
-                        month: 'long', 
-                        day: 'numeric' 
-                    });
-                }
-            }
+        async function predict(type) {
+            const status = document.getElementById('status');
+            status.style.display = 'block';
+            status.innerText = `Predicting ${type}...`;
 
-            // Show status message
-            function showStatus(type, message) {
-                const bar = document.getElementById('statusBar');
-                const msg = document.getElementById('statusMessage');
-                if (!bar) return;
-                
-                bar.classList.remove('hidden', 'alert-success', 'alert-error', 'alert-info', 'alert-warning');
-                
-                const typeMap = {
-                    success: 'alert-success',
-                    error: 'alert-error',
-                    info: 'alert-info',
-                    warning: 'alert-warning'
-                };
-                
-                bar.classList.add(typeMap[type] || 'alert-info');
-                msg.textContent = message;
-            }
-
-            // Set loading state for button
-            function setLoading(btnId, isLoading, originalText) {
-                const btn = document.getElementById(btnId);
-                if (!btn) return;
-                
-                btn.disabled = isLoading;
-                if (isLoading) {
-                    btn.innerHTML = '<span class="spinner"></span>Processing...';
-                } else {
-                    btn.innerHTML = originalText;
-                }
-            }
-
-            // Update system status
-            function updateSystemStatus(online, message = '') {
-                const statusEl = document.getElementById('systemStatus');
-                const footerEl = document.getElementById('footerStatus');
-                
-                if (statusEl) {
-                    const indicator = statusEl.querySelector('.status-indicator');
-                    const text = statusEl.querySelector('span:last-child');
-                    
-                    indicator.classList.remove('status-online', 'status-offline', 'status-warning');
-                    indicator.classList.add(online ? 'status-online' : 'status-offline');
-                    text.textContent = message || (online ? 'Connected' : 'Disconnected');
-                }
-                
-                if (footerEl) {
-                    footerEl.textContent = online ? 'System operational' : 'Connection error';
-                }
-            }
-
-            // Health check
-            async function checkHealth() {
-                try {
-                    const res = await fetch(`${API_BASE}/health`);
-                    const data = await res.json();
-                    
-                    if (data.status === 'healthy') {
-                        updateSystemStatus(true, 'Connected');
-                        showStatus('success', 'Server connection established');
-                    } else {
-                        updateSystemStatus(false, 'Server unstable');
-                        showStatus('warning', 'Server responding but unstable');
-                    }
-                } catch (e) {
-                    updateSystemStatus(false, 'Connection failed');
-                    showStatus('error', 'Cannot connect to prediction server. Please ensure the Flask application is running on port 5001.');
-                }
-            }
-
-            // Load model information
-            async function loadModels() {
-                try {
-                    const res = await fetch(`${API_BASE}/models`);
-                    const data = await res.json();
-                    
-                    availableModels = data.models || [];
-                    const config = data.config || {};
-                    
-                    document.getElementById('modelCount').textContent = availableModels.length;
-                    document.getElementById('sequenceLength').textContent = config.sequence_length || '--';
-                    document.getElementById('forecastDays').textContent = config.forecast_days || '--';
-                    
-                    // Disable buttons for unavailable models
-                    if (!availableModels.includes('adike')) {
-                        ['predictAdike', 'forecastAdike'].forEach(id => {
-                            const btn = document.getElementById(id);
-                            if (btn) {
-                                btn.disabled = true;
-                                btn.classList.add('opacity-50', 'cursor-not-allowed');
-                                btn.title = 'Model not available';
-                            }
-                        });
-                    }
-                    
-                    if (!availableModels.includes('patora')) {
-                        ['predictPatora', 'forecastPatora'].forEach(id => {
-                            const btn = document.getElementById(id);
-                            if (btn) {
-                                btn.disabled = true;
-                                btn.classList.add('opacity-50', 'cursor-not-allowed');
-                                btn.title = 'Model not available';
-                            }
-                        });
-                    }
-                } catch (e) {
-                    console.error('Failed to load models:', e);
-                    showStatus('warning', 'Unable to retrieve model configuration');
-                }
-            }
-
-            // Single day prediction
-            window.predictPrice = async function(type) {
-                const btnId = type === 'adike' ? 'predictAdike' : 'predictPatora';
-                const displayName = type.charAt(0).toUpperCase() + type.slice(1);
-                const originalText = `Predict ${displayName} Price`;
-                
-                setLoading(btnId, true, originalText);
-                
-                try {
-                    const res = await fetch(`${API_BASE}/predict`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ type })
-                    });
-                    const result = await res.json();
-                    
-                    if (!res.ok) throw new Error(result.error || 'Prediction failed');
-                    
-                    const price = result.data.price;
-                    const pricePerKg = (price / 100).toFixed(2);
-                    const dateStr = result.data.date;
-                    
-                    document.getElementById('predictionResult').classList.remove('hidden');
-                    document.getElementById('predictionContent').innerHTML = `
-                        <table class="data-table">
-                            <tr>
-                                <th>Variety</th>
-                                <th>Date</th>
-                                <th>Price (Quintal)</th>
-                                <th>Price (Kg)</th>
-                            </tr>
-                            <tr>
-                                <td><span class="badge badge-blue">${displayName}</span></td>
-                                <td class="mono">${dateStr}</td>
-                                <td class="font-semibold">₹${Number(price).toLocaleString('en-IN')}</td>
-                                <td class="text-gray-600">₹${pricePerKg}</td>
-                            </tr>
-                        </table>
-                    `;
-                    
-                    showStatus('success', `Prediction completed successfully for ${displayName}`);
-                } catch (err) {
-                    showStatus('error', err.message);
-                    document.getElementById('predictionResult').classList.add('hidden');
-                } finally {
-                    setLoading(btnId, false, originalText);
-                }
-            };
-
-            // Multi-day forecast
-            window.generateForecast = async function(type) {
-                const btnId = type === 'adike' ? 'forecastAdike' : 'forecastPatora';
-                const displayName = type.charAt(0).toUpperCase() + type.slice(1);
-                const originalText = `${displayName} 7-Day Forecast`;
-                
-                setLoading(btnId, true, originalText);
-                
-                try {
-                    const res = await fetch(`${API_BASE}/forecast`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ type })
-                    });
-                    const result = await res.json();
-                    
-                    if (!res.ok) throw new Error(result.error || 'Forecast failed');
-                    
-                    const data = result.data;
-                    updateChart(data, displayName);
-                    document.getElementById('chartTitle').textContent = `${displayName} Price Forecast - Historical & Predicted`;
-                    showStatus('success', `7-day forecast generated successfully for ${displayName}`);
-                } catch (err) {
-                    showStatus('error', err.message);
-                } finally {
-                    setLoading(btnId, false, originalText);
-                }
-            };
-
-            // Update chart
-            function updateChart(data, title) {
-                const ctx = document.getElementById('priceChart').getContext('2d');
-                if (chart) chart.destroy();
-
-                const labels = [...data.historical.dates, ...data.forecast.dates];
-                const prices = [...data.historical.prices, ...data.forecast.prices];
-                const historicalCount = data.historical.prices.length;
-
-                chart = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: `${title} Price (₹/quintal)`,
-                            data: prices,
-                            borderColor: '#2563eb',
-                            backgroundColor: 'rgba(37, 99, 235, 0.1)',
-                            borderWidth: 2,
-                            pointRadius: 4,
-                            pointHoverRadius: 6,
-                            pointBackgroundColor: (ctx) => {
-                                const index = ctx.dataIndex;
-                                return index >= historicalCount ? '#64748b' : '#2563eb';
-                            },
-                            pointBorderColor: '#ffffff',
-                            pointBorderWidth: 2,
-                            segment: {
-                                borderDash: (ctx) => {
-                                    return ctx.p0DataIndex >= historicalCount - 1 ? [5, 5] : [];
-                                }
-                            },
-                            tension: 0.1,
-                            fill: true,
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            tooltip: {
-                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                                padding: 12,
-                                titleColor: '#ffffff',
-                                bodyColor: '#ffffff',
-                                borderColor: '#2563eb',
-                                borderWidth: 1,
-                                displayColors: false,
-                                callbacks: {
-                                    label: (c) => `₹${c.parsed.y.toLocaleString('en-IN')} per quintal`,
-                                    title: (items) => {
-                                        const idx = items[0].dataIndex;
-                                        const type = idx < historicalCount ? 'Historical' : 'Forecast';
-                                        return `${type} - ${items[0].label}`;
-                                    }
-                                }
-                            },
-                            legend: {
-                                display: true,
-                                labels: {
-                                    color: '#374151',
-                                    font: { size: 12, weight: '500' },
-                                    padding: 15
-                                }
-                            }
-                        },
-                        scales: {
-                            y: {
-                                grid: {
-                                    color: '#e5e7eb',
-                                    drawBorder: false
-                                },
-                                ticks: {
-                                    callback: (v) => '₹' + v.toLocaleString('en-IN'),
-                                    color: '#6b7280',
-                                    font: { size: 11 }
-                                },
-                                border: { display: false }
-                            },
-                            x: {
-                                grid: {
-                                    display: false
-                                },
-                                ticks: {
-                                    color: '#6b7280',
-                                    font: { size: 11 },
-                                    maxRotation: 45
-                                },
-                                border: { display: false }
-                            }
-                        }
-                    }
+            try {
+                const res = await fetch(`${API}/predict`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ type })
                 });
+                const result = await res.json();
                 
-                document.getElementById('chartMessage')?.classList.add('hidden');
+                document.getElementById('res-name').innerText = type.toUpperCase();
+                document.getElementById('res-date').innerText = result.data.date;
+                document.getElementById('res-price').innerText = `₹${result.data.price.toLocaleString('en-IN')}`;
+                document.getElementById('results').style.display = 'block';
+                status.innerText = 'Prediction Updated';
+            } catch (e) {
+                status.innerText = 'Error connecting to server';
             }
-
-            // Initialize
-            document.addEventListener('DOMContentLoaded', async () => {
-                updateDate();
-                await checkHealth();
-                await loadModels();
-            });
-        })();
+        }
     </script>
 </body>
 </html>
