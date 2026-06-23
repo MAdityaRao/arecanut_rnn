@@ -3,149 +3,269 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Adike · Real-time Forecast</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Outfit:wght@700&display=swap" rel="stylesheet">
+    <title>Arecanut Price Intelligence Engine</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #f4f7fe; --primary: #3b82f6; --card: #ffffff; --text: #333; }
-        body { background: var(--bg); font-family: 'Inter', sans-serif; margin: 0; padding: 40px; color: var(--text); }
-        .dashboard { display: grid; grid-template-columns: 380px 1fr; gap: 30px; max-width: 1200px; margin: 0 auto; }
-        
-        .glass-card { background: white; border-radius: 24px; padding: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.04); border: 1px solid #eef2f6; }
-        .price-display { 
-            background: linear-gradient(135deg, #fdfdff 0%, #f5f7ff 100%);
-            border: 2px solid #eaeeff; border-radius: 20px; padding: 40px 20px; text-align: center; margin-bottom: 25px;
-        }
-        .price-val { font-family: 'Outfit', sans-serif; font-size: 3.2rem; color: #3a41ba; margin: 10px 0; letter-spacing: -1px; }
-        .sub-text { font-size: 0.85rem; color: #888; font-weight: 500; }
-
-        .section-label { font-size: 0.9rem; font-weight: 600; margin-bottom: 15px; display: block; color: #555; }
-        .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 25px; }
-        .btn { 
-            border: none; border-radius: 10px; padding: 14px; color: white; 
-            font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 0.8rem;
-        }
-        .btn-adike { background: #3b82f6; }
-        .btn-patora { background: #10b981; }
-        .btn-graph { background: #8b5cf6; }
-        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
-
-        .graph-area { background: white; border-radius: 24px; padding: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.04); min-height: 500px; display: flex; flex-direction: column; }
-        .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .chart-container { flex-grow: 1; position: relative; width: 100%; height: 400px; }
-        .badge { background: #eef2f6; padding: 4px 10px; border-radius: 6px; font-size: 0.7rem; color: #666; font-weight: 600; }
+        body { font-family: 'Inter', sans-serif; }
     </style>
 </head>
-<body>
+<body class="bg-[#f8fafc] min-h-screen text-slate-800 antialiased flex flex-col justify-between">
 
-    <div class="dashboard">
-        <div class="left-pane">
-            <div class="glass-card">
-                <div class="price-display">
-                    <span class="sub-text" id="target-label">Predicted Price for Tomorrow</span>
-                    <div class="price-val" id="main-price">₹ --,---</div>
-                    <span class="sub-text" id="kg-price">-- / kg</span>
+    <!-- Premium Navigation Bar -->
+    <nav class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-xs">
+        <div class="max-w-7xl mx-auto px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="bg-indigo-900 text-white p-2 rounded-xl font-bold text-xs tracking-wider">RNN</div>
+                <div>
+                    <span class="font-bold text-slate-900 tracking-tight block text-sm">Arecanut Price Intelligence</span>
+                    <span class="text-[11px] text-slate-400 font-medium block">Recurrent Neural Network Forecasting</span>
                 </div>
-
-                <span class="section-label">Quick Actions</span>
-                <div class="btn-grid">
-                    <button class="btn btn-adike" onclick="handleUpdate('adike')">Adike Price</button>
-                    <button class="btn btn-patora" onclick="handleUpdate('patora')">Patora Price</button>
-                </div>
-
-                <span class="section-label">Full Market Forecast</span>
-                <div class="btn-grid">
-                    <button class="btn btn-graph" onclick="handleUpdate('adike')">View Adike Graph</button>
-                    <button class="btn btn-graph" onclick="handleUpdate('patora')">View Patora Graph</button>
-                </div>
+            </div>
+            <div class="flex items-center gap-2 bg-indigo-50 px-3 py-1.5 rounded-full border border-indigo-100">
+                <span class="h-2 w-2 rounded-full bg-indigo-600 animate-pulse"></span>
+                <span class="text-xs font-semibold text-indigo-900 tracking-wide">Analysis Engine Online</span>
             </div>
         </div>
+    </nav>
 
-        <div class="graph-area">
-            <div class="chart-header">
-                <span class="section-label" id="chart-title" style="margin:0">Price Analysis & Prediction</span>
-                <span class="badge" id="last-updated">Real-time Data</span>
+    <!-- Main Workspace Dashboard Wrapper -->
+    <div class="w-full max-w-7xl mx-auto px-8 py-8 grow flex flex-col justify-center">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+            
+            <!-- Left Command Panel (4 Grid Slots) -->
+            <div class="lg:col-span-4 flex flex-col justify-between gap-6">
+                
+                <!-- Market Segment Selector Block -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs flex-1 flex flex-col justify-between">
+                    <div>
+                        <div class="mb-5">
+                            <h2 class="text-xs font-bold text-slate-400 tracking-wider uppercase">Market Dataset Source</h2>
+                            <p class="text-xs text-slate-500 mt-1">Select the transactional pricing track to process through the model memory layers.</p>
+                        </div>
+                        
+                        <div class="space-y-3">
+                            <label class="flex items-start p-4 rounded-xl border-2 border-indigo-600 bg-indigo-50/30 cursor-pointer transition-all duration-200">
+                                <input type="radio" name="variety" value="adike" checked class="mt-1 w-4 h-4 text-indigo-600 focus:ring-transparent border-slate-300">
+                                <div class="ml-3.5">
+                                    <span class="block font-semibold text-slate-900 text-sm">Adike Market Track</span>
+                                    <span class="text-xs text-slate-500 block mt-0.5">Focuses on maximum valuation sequences across regional trade lots.</span>
+                                </div>
+                            </label>
+                            
+                            <label class="flex items-start p-4 rounded-xl border-2 border-slate-100 bg-slate-50/50 cursor-pointer hover:bg-slate-50 hover:border-slate-200 transition-all duration-200">
+                                <input type="radio" name="variety" value="patora" class="mt-1 w-4 h-4 text-indigo-600 focus:ring-transparent border-slate-300">
+                                <div class="ml-3.5">
+                                    <span class="block font-semibold text-slate-700 text-sm">Patora Market Track</span>
+                                    <span class="text-xs text-slate-500 block mt-0.5">Focuses on median base rates across mainstream trading hubs.</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Execution Trigger Button Component -->
+                    <button id="predictBtn" class="mt-8 w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold text-sm py-4 px-4 rounded-xl transition shadow-md active:scale-[0.99] cursor-pointer tracking-wide">
+                        Compute RNN Forecast
+                    </button>
+                </div>
+
             </div>
-            <div class="chart-container">
-                <canvas id="forecastChart"></canvas>
+
+            <!-- Right Telemetry Panel (8 Grid Slots) -->
+            <div class="lg:col-span-8 flex flex-col gap-6">
+                
+                <!-- Metrics Summary Box -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <!-- Core Forecast Metrics Card -->
+                    <div class="sm:col-span-2 bg-indigo-950 text-white p-6 rounded-2xl shadow-sm relative overflow-hidden flex flex-col justify-between min-h-[120px]">
+                        <div>
+                            <span class="text-indigo-200/80 text-[10px] font-bold uppercase tracking-wider block">Projected Tomorrow Price</span>
+                            <div class="flex items-baseline mt-1">
+                                <span class="text-4xl font-bold tracking-tight text-white" id="priceDisplay">₹ --</span>
+                                <span class="text-indigo-200/70 text-xs ml-2 font-medium">/ Quintal</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Timeline Target Metric Card -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs flex flex-col justify-between min-h-[120px]">
+                        <div>
+                            <span class="text-slate-400 text-[10px] font-bold uppercase tracking-wider block">Target Horizon</span>
+                            <span class="text-lg font-bold text-slate-900 block mt-2 tracking-tight" id="dateDisplay">--</span>
+                        </div>
+                        <span class="text-[11px] text-slate-400 font-medium block border-t border-slate-100 pt-2">Next sequential step</span>
+                    </div>
+                </div>
+
+                <!-- Trendline Analysis Canvas Area Card -->
+                <div class="bg-white p-6 rounded-2xl shadow-xs border border-slate-200 grow flex flex-col justify-between min-h-[380px]">
+                    <div class="flex items-center justify-between mb-6 shrink-0 pb-4 border-b border-slate-100">
+                        <div>
+                            <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider">Market Trend Horizon</h3>
+                            <p class="text-[11px] text-slate-400 mt-0.5">Historical price context matched directly against upcoming network estimates.</p>
+                        </div>
+                        <div class="flex gap-4 text-xs font-medium text-slate-500">
+                            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-slate-500"></span> Past Pricing</span>
+                            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-indigo-600"></span> Model Forecast</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Dynamic Fluid Container Optimized for Laptop Aspect Ratios -->
+                    <div class="relative w-full grow">
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
 
+    <!-- Layout Footer Information -->
+    <footer class="bg-white border-t border-slate-200 py-4 shrink-0 text-center text-xs text-slate-400 font-medium">
+        System Workspace Interface Framework • Running Local Instance
+    </footer>
+
+    <!-- Operational Data Control Script -->
     <script>
+        const API_BASE = "http://localhost:5001";
         let chartInstance = null;
 
-        // Generates dates centered around "NOW" (May 21, 2026)
-        function generateLiveLabels() {
-            const labels = [];
-            for (let i = -6; i <= 7; i++) {
-                const date = new Date();
-                date.setDate(date.getDate() + i);
-                labels.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
-            }
-            return labels;
-        }
+        // Variety Switch Sync Visual Controller
+        document.querySelectorAll('input[name="variety"]').forEach(input => {
+            input.addEventListener('change', (e) => {
+                document.querySelectorAll('input[name="variety"]').forEach(i => {
+                    const box = i.closest('label');
+                    box.className = "flex items-start p-4 rounded-xl border-2 border-slate-100 bg-slate-50/50 cursor-pointer hover:bg-slate-50 hover:border-slate-200 transition-all duration-200";
+                    box.querySelector('span').className = "block font-semibold text-slate-700 text-sm";
+                });
+                if(e.target.checked) {
+                    const box = e.target.closest('label');
+                    box.className = "flex items-start p-4 rounded-xl border-2 border-indigo-600 bg-indigo-50/30 cursor-pointer transition-all duration-200";
+                    box.querySelector('span').className = "block font-semibold text-slate-900 text-sm";
+                }
+            });
+        });
 
-        async function handleUpdate(type) {
+        // Async API Telemetry Collection Pipeline
+        document.getElementById('predictBtn').addEventListener('click', async () => {
+            const btn = document.getElementById('predictBtn');
+            const variety = document.querySelector('input[name="variety"]:checked').value;
+            
+            btn.disabled = true;
+            btn.innerText = "Evaluating Price Vectors...";
+            
             try {
-                const response = await fetch('http://127.0.0.1:5001/predict', {
+                const res = await fetch(`${API_BASE}/predict`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ type })
+                    body: JSON.stringify({ type: variety })
                 });
-                const res = await response.json();
-                
-                const price = res.data.price;
-                document.getElementById('main-price').innerText = `₹${price.toLocaleString('en-IN')}`;
-                document.getElementById('kg-price').innerText = `₹${(price/100).toFixed(2)} / kg`;
-                document.getElementById('chart-title').innerText = `${type.toUpperCase()} Trend: May 15 - June 03`;
-                document.getElementById('target-label').innerText = `Predicted ${type} Price for Tomorrow`;
+                const result = await res.json();
 
-                // Use actual API trend or generate a realistic 14-day wave around the current price
-                const liveData = res.data.trend || Array.from({length: 14}, () => price + (Math.random() * 600 - 300));
-                
-                renderStableChart(generateLiveLabels(), liveData);
+                const histRes = await fetch(`${API_BASE}/history/${variety}`);
+                const histData = await histRes.json();
+
+                if(result.success && histData.history) {
+                    document.getElementById('priceDisplay').innerText = `₹ ${result.data.price.toLocaleString('en-IN')}`;
+                    document.getElementById('dateDisplay').innerText = formatDateString(result.data.date, 'long');
+                    
+                    renderChart(histData.history, result.data.price, result.data.date);
+                } else {
+                    alert("Could not update target baseline matrices.");
+                }
             } catch (err) {
-                alert("Ensure your FastAPI server is running on port 5001");
+                console.error(err);
+                alert("Database server connection refused. Check if app.py is alive on port 5001.");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Compute RNN Forecast";
             }
+        });
+
+        function formatDateString(dateStr, formatStyle = 'short') {
+            const d = new Date(dateStr);
+            if (formatStyle === 'long') {
+                return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            }
+            return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
         }
 
-        function renderStableChart(labels, data) {
-            const ctx = document.getElementById('forecastChart').getContext('2d');
-            if (chartInstance) chartInstance.destroy();
+        // Horizontal Grid Space Calculation Engine to Prevent Overlapping Dates
+        function renderChart(historicalPoints, predictionPoint, predictionDateStr) {
+            const ctx = document.getElementById('trendChart').getContext('2d');
+            const totalPoints = historicalPoints.length;
+            const targetPredDate = new Date(predictionDateStr);
 
-            const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-            gradient.addColorStop(0, 'rgba(59, 130, 246, 0.25)');
-            gradient.addColorStop(1, 'rgba(59, 130, 246, 0)');
+            // Compute ideal step spacing stride context dynamically depending on lookback windows size
+            const idealTickStride = Math.ceil(totalPoints / 6); 
+
+            const labels = historicalPoints.map((_, i) => {
+                const dayOffset = totalPoints - i; 
+                const currentDate = new Date(targetPredDate);
+                currentDate.setDate(targetPredDate.getDate() - dayOffset);
+
+                const daysAgo = totalPoints - i - 1;
+                
+                // Keep the final day margins totally clean right before the prediction point
+                if (daysAgo <= 1) {
+                    return "";
+                }
+                
+                // Stride intervals evenly distributed across lookback array
+                if (daysAgo % idealTickStride === 0) {
+                    return formatDateString(currentDate);
+                }
+                return ""; 
+            });
+            
+            // Push final localized target label onto axis point array
+            labels.push(formatDateString(targetPredDate) + " (Forecast)");
+            const dataPoints = [...historicalPoints, predictionPoint];
+
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
 
             chartInstance = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: 'Price (Rs./Quintal)',
-                        data: data,
-                        borderColor: '#3b82f6',
-                        borderWidth: 3,
-                        pointBackgroundColor: (context) => context.dataIndex === 6 ? '#ff4757' : '#3b82f6', // Mark 'Today' in red
-                        pointRadius: (context) => context.dataIndex === 6 ? 6 : 4,
-                        fill: true,
-                        backgroundColor: gradient,
-                        tension: 0.4
+                        data: dataPoints,
+                        borderColor: '#64748b', // Neutral Slate Blue for past data
+                        backgroundColor: 'transparent',
+                        borderWidth: 2.5,
+                        tension: 0.15,
+                        pointBackgroundColor: (context) => context.dataIndex === dataPoints.length - 1 ? '#4f46e5' : '#64748b', // Strong Indigo for Forecast point
+                        pointBorderColor: (context) => context.dataIndex === dataPoints.length - 1 ? '#e0e7ff' : '#ffffff',
+                        pointBorderWidth: (context) => context.dataIndex === dataPoints.length - 1 ? 2.5 : 1,
+                        pointRadius: (context) => context.dataIndex === dataPoints.length - 1 ? 7 : 4,
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    scales: {
-                        y: { grid: { color: '#f0f0f0' }, ticks: { font: { size: 11 } } },
-                        x: { grid: { display: false }, ticks: { font: { size: 10 } } }
+                    plugins: { 
+                        legend: { display: false }
                     },
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            callbacks: {
-                                label: (context) => ` Price: ₹${context.parsed.y.toLocaleString('en-IN')}`
+                    scales: {
+                        y: { 
+                            grid: { color: '#f1f5f9' },
+                            border: { dash: [4, 4] },
+                            ticks: { color: '#94a3b8', font: { family: 'Inter', size: 11 } }
+                        },
+                        x: { 
+                            grid: { display: false },
+                            ticks: { 
+                                color: (tick) => tick.index === dataPoints.length - 1 ? '#4f46e5' : '#94a3b8',
+                                font: { 
+                                    family: 'Inter', 
+                                    size: 11, 
+                                    weight: (tick) => tick.index === dataPoints.length - 1 ? '600' : '400' 
+                                },
+                                maxRotation: 0, 
+                                minRotation: 0,
+                                autoSkip: false 
                             }
                         }
                     }
@@ -153,8 +273,10 @@
             });
         }
 
-        // Auto-run on load
-        window.onload = () => handleUpdate('adike');
+        // Automatic orchestration execution block upon load loop
+        window.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('predictBtn').click();
+        });
     </script>
 </body>
 </html>
